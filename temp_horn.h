@@ -7,18 +7,18 @@
 #define MAXTIMINGS	85
 #define DHTPIN		7
 
-bool read_dht11_dat(vector<int>& dht11_dat)
+bool read_dht11_dat(std::vector<int>& dht11_dat)
 {
-	if (dht11_dat.size() != 5) {
+	if (dht11_dat.size() != 6) {
 		printf("DHT-11 Error: Invalid container size\n");
-		return;
+		return false;
 	}
 	uint8_t laststate = HIGH;
 	uint8_t counter = 0;
 	uint8_t j = 0, i;
 	float	f;
 
-	dht11_dat[0] = dht11_dat[1] = dht11_dat[2] = dht11_dat[3] = dht11_dat[4] = 0;
+	dht11_dat[0] = dht11_dat[1] = dht11_dat[2] = dht11_dat[3] = dht11_dat[4] = dht11_dat[5] = 0;
 
 	pinMode(DHTPIN, OUTPUT);
 	digitalWrite(DHTPIN, LOW);
@@ -57,15 +57,16 @@ bool read_dht11_dat(vector<int>& dht11_dat)
 		(dht11_dat[4] == ((dht11_dat[0] + dht11_dat[1] + dht11_dat[2] + dht11_dat[3]) & 0xFF)))
 	{
 		f = dht11_dat[2] * 9. / 5. + 32;
-		printf("Humidity = %d.%d %% Temperature = %d.%d C (%.1f F)\n",
-			dht11_dat[0], dht11_dat[1], dht11_dat[2], dht11_dat[3], f);
+		//printf("Humidity = %d.%d %% Temperature = %d.%d C (%.1f F)\n",
+		//	dht11_dat[0], dht11_dat[1], dht11_dat[2], dht11_dat[3], f);
 		dht11_dat[4] = f;
+		dht11_dat[5] = (f - dht11_dat[4]) * 10;
 		//success
 		return true;
 	}
 	else {
-		printf("Data not good, skip\n");
-		dht11_dat[0] = dht11_dat[1] = dht11_dat[2] = dht11_dat[3] = dht11_dat[4] = 0;
+		//printf("Data not good, skip\n");
+		dht11_dat[0] = dht11_dat[1] = dht11_dat[2] = dht11_dat[3] = dht11_dat[4] = dht11_dat[5] = 0;
 		//failure
 		return false;
 	}
